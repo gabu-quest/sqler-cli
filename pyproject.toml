@@ -1,0 +1,50 @@
+[project]
+name = "sqler-cli"
+version = "0.1.0"
+description = "LLM memory management CLI - persistent storage with FTS5 search"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+keywords = ["llm", "memory", "cli", "sqlite", "fts5", "ai", "agent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "sqler[pydantic]",
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/gabu-quest/sqler-cli"
+Repository = "https://github.com/gabu-quest/sqler-cli"
+Issues = "https://github.com/gabu-quest/sqler-cli/issues"
+
+[project.scripts]
+mem = "sqler_cli.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sqler_cli"]
+
+[tool.uv.sources]
+sqler = { path = "../sqler", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.0.0",
+]

@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Tests • ${{ matrix.os }} • py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup UV
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Remove local source override for CI
+        run: |
+          # Remove the [tool.uv.sources] section so sqler is fetched from PyPI
+          python -c "
+          import re
+          with open('pyproject.toml') as f:
+              content = f.read()
+          # Remove the uv.sources section
+          content = re.sub(r'\[tool\.uv\.sources\].*?(?=\[|$)', '', content, flags=re.DOTALL)
+          with open('pyproject.toml', 'w') as f:
+              f.write(content.strip() + '\n')
+          "
+        shell: bash
+
+      - name: Sync dependencies
+        run: uv sync --dev
+
+      - name: Show versions
+        run: |
+          uv run python --version
+          uv run pytest --version
+
+      - name: Run tests
+        env:
+          PYTHONUTF8: "1"
+        run: uv run pytest -v --disable-warnings
+
+      - name: Smoke test CLI
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          uv run mem --help
+          uv run mem init --db /tmp/test.db
+          uv run mem remember "CI test memory" --db /tmp/test.db
+          uv run mem recall "test" --json --db /tmp/test.db
