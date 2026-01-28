@@ -803,9 +803,12 @@ class TestRecentFirst:
 
     def test_recent_first_sorts_by_date(self, temp_db_path: str) -> None:
         """--recent-first sorts results by creation date, not relevance."""
-        # Create memories (order matters for created_at)
+        import time
+        # Create memories with small delays to ensure distinct timestamps
         runner.invoke(app, ["remember", "First API note", "--db", temp_db_path])
+        time.sleep(0.01)
         runner.invoke(app, ["remember", "Second API note", "--db", temp_db_path])
+        time.sleep(0.01)
         runner.invoke(app, ["remember", "Third API note", "--db", temp_db_path])
 
         result = runner.invoke(app, ["recall", "API", "--recent-first", "--json", "--db", temp_db_path])

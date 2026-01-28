@@ -312,7 +312,7 @@ wheels = [
 
 [[package]]
 name = "sqler"
-version = "1.2026.1.6"
+version = "1.2026.1.7"
 source = { editable = "../sqler" }
 dependencies = [
     { name = "aiosqlite" },
