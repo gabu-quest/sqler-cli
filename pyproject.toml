@@ -1,6 +1,6 @@
 [project]
 name = "sqler-cli"
-version = "0.1.1"
+version = "0.1.2"
 description = "LLM memory management CLI - persistent storage with FTS5 search"
 readme = "README.md"
 license = "MIT"

@@ -553,7 +553,8 @@ def recall(
 
     # Sort options
     if recent_first:
-        memories.sort(key=lambda m: m.created_at or datetime.min, reverse=True)
+        # Sort by created_at desc, then by ID desc (newer IDs are higher)
+        memories.sort(key=lambda m: (m.created_at or datetime.min, m._id or 0), reverse=True)
     elif boost_important and scores:
         # Sort by importance first (desc), then by score (asc, more negative = better)
         memories.sort(key=lambda m: (-m.importance, scores.get(m._id, 0)))
